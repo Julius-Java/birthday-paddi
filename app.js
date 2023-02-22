@@ -2,11 +2,12 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const nodeCron = require("node-cron")
-const twilio = require('twilio');
 const env = require('dotenv').config()
-const accountSid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+const request = require('request');
 
 const app = express()
+
+
 
 app.use(express.static("public"))
 app.use(bodyParser.urlencoded({extended: true}))
@@ -38,24 +39,31 @@ const idSchema = new mongoose.Schema({
 
 const Id = mongoose.model("Id", idSchema)
 
+const smsSchema = new mongoose.Schema({
+    date: String,
+    nameList: Array
+})
+
+const Messagelog = mongoose.model("Messagelog", smsSchema)
+
 const id1 = new Id({
-    id: "GVVA00"
+    id: process.env.ID_0
 })
 
 const id2 = new Id({
-    id: "GVVA01"
+    id: process.env.ID_1
 })
 
 const id3 = new Id({
-    id: "GVVA02"
+    id: process.env.ID_2
 })
 
 const id4 = new Id({
-    id: "GVVA03"
+    id: process.env.ID_3
 })
 
 const id5 = new Id({
-    id: "GVVA04"
+    id: process.env.ID_4
 })
 
 const defaultIds = [id1, id2, id3, id4, id5];
@@ -141,16 +149,63 @@ app.route("/search")
         })
     })
 
-// nodeCron.schedule('* * * * *', () => {
-//     console.log('running a task every minute');
+nodeCron.schedule('*/1 * * * *', () => {
+    Member.find({birthDate: "1-1"}, (error, items) => {
+        if (!error) {
+            if (items) {
+                if (items.length === 0) {
+                    // console.log("We're not celebrating any birthdays today");
+                } else if (items.length === 1) {
+                    console.log("We're celebrating only one birthday today and that is " + items.firstName + " " + items.lastName);
+                    console.log(items);
+                } else if (items.length > 1) {
+                    console.log("We're celebrating " + items.length + " birthdays today");
+                    console.log(items);
+                }
+            } else {
+                console.log("Error getting items");
+            }
+        } else {
+            console.log(error);
+        }
+    })
+})
+
+// const today = new Date();
+// const day = today.getDate().toString()
+// const month = (today.getMonth() + 1).toString()
+// const formattedDate = `${day}-${month}`;
+// console.log(formattedDate);
+// // console.log(today);
+
+// var data = {
+//     "to": ["2349024432171", "2349161285630"],
+//     "from": "julius-java",
+//     "sms": "Hi there, testing Termii API",
+//     "type": "plain",
+//     "channel": "generic",
+//     "api_key": process.env.TERMII_API_KEY,
+// };
+
+// var options = {
+//     "method": "POST",
+//     "url": 'https://termii.com/api/sms/send',
+//     "headers": {
+//         'Content-Type': ['application/json', 'application/json']
+//     },
+//     body: JSON.stringify(data)
+// }
+
+// request(options, (error, response) => {
+//     if (error) {
+//         console.log("Error found");
+//         console.log(error);
+//     } else {
+//         console.log(response.body);
+//     }
 // })
 
-const today = new Date();
-const day = today.getDate().toString()
-const month = (today.getMonth() + 1).toString()
-const formattedDate = `${day}-${month}`;
-console.log(formattedDate);
-// console.log(today);
+// {"message":"Insufficient balance"}
 
 
 app.listen(4000, () => {

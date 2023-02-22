@@ -59,6 +59,7 @@ $(document).ready(() => {
         if ($('#member-id').val().length < 6) {
             e.preventDefault();
             idInvalid();
+            // alert("Not 6 digits")
         }
     })
 

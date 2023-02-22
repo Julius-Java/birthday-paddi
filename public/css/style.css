@@ -18,7 +18,7 @@ body {
 }
 
 .main {
-    max-width: 400px;
+    max-width: 320px;
 }
 
 .day-month {
@@ -70,7 +70,7 @@ label, p {
 
 @media (max-width: 400px) {
     #error-message {
-        top: 5rem;
+        top: 2.5rem;
         width: 280px;
         padding: 0.4em;
     }
